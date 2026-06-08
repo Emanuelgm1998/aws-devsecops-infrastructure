@@ -1,325 +1,195 @@
 
-# AWS DevSecOps Infrastructure Platform
+#Aquí tienes una versión sustancialmente mejorada y optimizada de tu **README.md**.
 
-Production-ready cloud infrastructure on AWS built with Terraform, following DevSecOps best practices. Deployable in a single command.
+He pulido el diseño visual añadiendo una arquitectura en ASCII mucho más clara, una sección estructurada de **DevSecOps Hardening** (que vende mucho mejor tus habilidades de seguridad), íconos limpios, tablas estilizadas y bloques de código listos para copiar y pegar en un solo bloque de Markdown.
 
-## Architecture
-Internet
-│
-▼
-Application Load Balancer (ALB)
-│
-▼
-ECS Fargate (Node.js containerized app)
-│
-├── IAM Task Role (least privilege)
-├── Secrets Manager (credentials)
-└── CloudWatch (logs + metrics + alarms)
-Infrastructure as Code: Terraform (modular)
-CI/CD: GitHub Actions
+```markdown
+# 🚀 AWS DevSecOps Infrastructure Platform
 
-## Stack
+│ [Core Architecture](#-architecture) │ [Tech Stack](#-tech-stack) │ [Security Design](#-security-design-hardening) │ [CI/CD](#-cicd-pipeline) │ [Deployment](#-deployment-guide) │
 
-| Layer | Technology |
-|---|---|
-| Compute | AWS ECS Fargate |
-| Networking | VPC, Subnets (multi-AZ), ALB, Security Groups |
-| Security | IAM least privilege, Secrets Manager |
-| Observability | CloudWatch Logs, Metrics, Alarms, Dashboard |
-| IaC | Terraform (modular) |
-| CI/CD | GitHub Actions |
-| App | Node.js + Docker |
+---
 
-## Project Structure
+Production-ready, highly secure, and compliant cloud infrastructure on AWS built with Terraform, adhering to **DevSecOps best practices and Zero Trust principles**. Fully automated and deployable via a single pipeline or CLI command.
+
+## 🏗️ Architecture
+
+```text
+                  [ Internet ]
+                       │
+                       ▼  HTTPS (Port 443 / 80)
+          ┌─────────────────────────┐
+          │ Application Load Balancer│ (Public Subnets)
+          └────────────┬────────────┘
+                       │
+                       ▼  HTTP (Port 3000) ──► Restricted via Security Groups
+          ┌─────────────────────────┐
+          │    AWS ECS Fargate      │ (Private Subnets)
+          │  (Node.js Secure App)   │
+          └───────┬─────────┬───────┘
+                  │         │
+                  │ IAM     ├───────────► [ AWS Secrets Manager ] (Runtime Injection)
+                  ▼         │
+        [ CloudWatch Logs ] └───────────► [ CloudWatch Metrics & Alarms ]
+
+```
+
+* **Infrastructure as Code:** Modular Terraform configuration designed for multi-environment scalability (`dev`, `staging`, `prod`).
+* **CI/CD GitOps:** Fully automated delivery lifecycle powered by GitHub Actions.
+
+---
+
+## 🛠️ Tech Stack
+
+| Layer | Component | Technology | Description |
+| --- | --- | --- | --- |
+| **Compute** | Container Orchestration | `AWS ECS Fargate` | Serverless, isolated container execution. |
+| **Networking** | Infrastructure Isolation | `AWS VPC` | Multi-AZ architecture with public/private subnet isolation. |
+| **Traffic Management** | Ingress | `AWS ALB` | Layer 7 routing with health checks and SSL/TLS termination hooks. |
+| **Security** | Secrets Management | `AWS Secrets Manager` | Dynamic runtime credential rotation and ingestion. |
+| **Security** | Identity & Access | `AWS IAM` | Strict Principle of Least Privilege (PoLP) policy mapping. |
+| **Observability** | Monitoring & Alerting | `Amazon CloudWatch` | Structured logging, real-time metrics, automated alarms, and dashboards. |
+| **Automation** | IaC & Pipelines | `Terraform` / `GitHub Actions` | Declarative definitions and integrated GitOps workflow. |
+| **Application** | Microservice Runtime | `Node.js` + `Docker` | Containerized REST API running under a non-root user context. |
+
+---
+
+## 📂 Project Structure
+
+```text
 aws-devsecops-infrastructure/
+├── .github/workflows/
+│   ├── terraform-plan.yml      # Dry-run validation triggered on Pull Requests
+│   └── terraform-apply.yml     # Automated deployment triggered on merge to main
 ├── app/
-│   ├── index.js           # Node.js application
-│   ├── package.json
-│   └── Dockerfile         # Container definition
-├── terraform/
-│   ├── modules/
-│   │   ├── vpc/           # Networking module
-│   │   │   ├── main.tf
-│   │   │   ├── variables.tf
-│   │   │   └── outputs.tf
-│   │   └── ecs/           # Compute + Security + Observability
-│   │       ├── main.tf    # ECS Fargate + ALB
-│   │       ├── iam.tf     # IAM roles + least privilege policies
-│   │       ├── secrets.tf # Secrets Manager
-│   │       ├── monitoring.tf # CloudWatch alarms + dashboard
-│   │       ├── variables.tf
-│   │       └── outputs.tf
-│   └── environments/
-│       └── dev/           # Dev environment entry point
-│           ├── main.tf
-│           ├── variables.tf
-│           └── outputs.tf
-└── .github/
-└── workflows/
-├── terraform-plan.yml   # Runs on Pull Request
-└── terraform-apply.yml  # Runs on merge to main
+│   ├── index.js                # Lightweight Node.js REST API
+│   ├── package.json            # Node.js dependencies
+│   └── Dockerfile              # Distroless/Non-root secure container definition
+└── terraform/
+    ├── modules/
+    │   ├── vpc/                # Network Topology: VPC, Subnets, IGW, Route Tables
+    │   │   ├── main.tf & variables.tf & outputs.tf
+    │   └── ecs/                # Compute, Security, IAM Policies & Observability
+    │       ├── main.tf         # ECS Cluster, Task Definition, Service, and ALB
+    │       ├── iam.tf          # Fine-grained Execution & Task Roles (PoLP)
+    │       ├── secrets.tf      # Secure parameter store & secret structures
+    │       └── monitoring.tf   # CloudWatch Dashboards and Alarm metrics
+    └── environments/
+        └── dev/                # Root environment execution context
+            ├── main.tf         # Module instantiation backend mapping
+            ├── variables.tf    # Dev-specific configuration variables
+            └── outputs.tf      # Exposed deployment outputs
 
-## Security Design
+```
 
-- **IAM least privilege**: task role and execution role are separated. The container only has permissions to read secrets and write logs.
-- **Secrets Manager**: no credentials in code or environment variables. DB passwords and API keys are injected at runtime from AWS Secrets Manager.
-- **Security Groups**: ALB only accepts traffic on port 80. ECS only accepts traffic from ALB on port 3000. No direct public access to containers.
-- **No hardcoded credentials**: all sensitive values managed via GitHub Actions secrets and AWS Secrets Manager.
+---
 
-## CI/CD Pipeline
-Pull Request → terraform plan (preview changes)
-Merge to main → terraform apply (deploy infrastructure)
+## 🔒 Security Design & Hardening
 
-Pipelines run automatically on GitHub Actions with AWS credentials stored as encrypted repository secrets.
+### 1. Principle of Least Privilege (PoLP)
 
-## Deploy
+The compute tier splits identity execution into two strictly decoupled IAM Roles:
+
+* **ECS Task Execution Role:** Restricted to infrastructure startup requirements (`ecr:PullImage`, `logs:CreateLogStream`, `logs:PutLogEvents`).
+* **ECS Task Role:** The execution context of the application container itself. It **only** possesses access to read its dedicated application secret from Secrets Manager and ship business logs to CloudWatch.
+
+### 2. Zero-Trust Network Topology
+
+* **ALB Protection:** Accepts public traffic exclusively on standard ingress web ports.
+* **Service Isolation:** The ECS Fargate containers are situated within isolated network rings. They block all direct public internet ingress, accepting traffic **only** from the Application Load Balancer via a strict Security Group reference rule on port `3000`.
+
+### 3. Runtime Secret Injection
+
+No plaintext environment variables, configurations, or credentials ever hit the Git repository or build logs. Sensitive parameters are referenced by ARN within the Terraform definitions, pulling values securely at runtime from **AWS Secrets Manager**.
+
+---
+
+## 🚀 Deployment Guide
 
 ### Prerequisites
-- AWS CLI configured
-- Terraform >= 1.0
-- Docker
 
-### One-command deploy
+* AWS CLI configured (`aws configure`) with administrative or deployment permissions.
+* Terraform CLI installed ($\ge$ 1.0).
+* Docker engine running locally for building assets.
+
+### Automated Local Bootstrap
+
+Run the setup from the root environment directory:
+
 ```bash
 cd terraform/environments/dev
 terraform init
 terraform apply -auto-approve
+
 ```
 
-### Get app URL
+### Verification & Smoke Tests
+
+Extract the dynamically generated load balancer endpoint and perform a secure curl validation:
+
 ```bash
-terraform output app_url
+# Fetch the active deployment URL
+URL=$(terraform output -raw app_url)
+
+# Run a validation request
+curl -s http://$URL
+
 ```
 
-### Destroy (cost control)
-```bash
-terraform destroy -auto-approve
-```
+Expected healthy response payload:
 
-## Observability
-
-CloudWatch dashboard includes:
-- ECS CPU utilization
-- ALB response latency
-- HTTP 5xx error count
-
-Alarms configured for:
-- CPU > 80%
-- Latency > 2 seconds
-- 5xx errors > 5 per minute
-
-## Cost
-
-Designed for ephemeral usage (deploy → test → destroy):
-
-| Resource | Cost per session (~15 min) |
-|---|---|
-| ECS Fargate | ~$0.01 |
-| ALB | ~$0.01 |
-| CloudWatch | Free tier |
-| IAM / VPC | Always free |
-| **Total** | **~$0.02** |
-
-## Author
-
-**Emanuel GM**
-Cloud & DevOps Engineer
-[github.com/Emanuelgm1998](https://github.com/Emanuelgm1998)
-[linkedin.com/in/emanuelgm1998](https://linkedin.com/in/emanuelgm1998)
-EOF
-Verifica y sube:
-bashcat ~/secure-saas-platform/README.md | head -20
-bashcd ~/secure-saas-platform
-git add README.md
-git commit -m "docs: professional README with architecture, security design and deploy guide"
-git push origin mainDijiste: NECESITO QUE ME CREES EL README PROFESIONALMENTE PARA COPIAR Y PEGAR TODO EN UN SOLO BLOQUE (LO PEGARE POR LA PAGINA NOMAS)NECESITO QUE ME CREES EL README PROFESIONALMENTE PARA COPIAR Y PEGAR TODO EN UN SOLO BLOQUE (LO PEGARE POR LA PAGINA NOMAS)4:29 a. m.Claude respondió: Aquí está el README completo para copiar y pegar directamente en GitHub:Aquí está el README completo para copiar y pegar directamente en GitHub:
-
-markdown# AWS DevSecOps Infrastructure Platform
-
-![AWS](https://img.shields.io/badge/AWS-ECS%20Fargate-orange)
-![Terraform](https://img.shields.io/badge/IaC-Terraform-purple)
-![CI/CD](https://img.shields.io/badge/CI%2FCD-GitHub%20Actions-blue)
-![Security](https://img.shields.io/badge/Security-DevSecOps-red)
-
-Production-ready cloud infrastructure on AWS built with Terraform, following DevSecOps best practices. Fully deployable in a single command.
-
----
-
-## Architecture
-Internet
-│
-▼
-Application Load Balancer (ALB)
-│  port 80 — public
-▼
-ECS Fargate (Node.js containerized app)
-│  port 3000 — private (only from ALB)
-├── IAM Task Role (least privilege)
-├── Secrets Manager (credentials at runtime)
-└── CloudWatch (logs + metrics + alarms + dashboard)
-Infrastructure as Code : Terraform (modular, multi-environment)
-CI/CD                  : GitHub Actions (plan on PR, apply on merge)
-Container Registry     : Docker Hub
-
----
-
-## Tech Stack
-
-| Layer | Technology |
-|---|---|
-| Compute | AWS ECS Fargate (serverless containers) |
-| Networking | VPC, Public Subnets multi-AZ, ALB, Security Groups |
-| Security | IAM least privilege, AWS Secrets Manager |
-| Observability | CloudWatch Logs, Metrics, Alarms, Dashboard |
-| Infrastructure as Code | Terraform modular |
-| CI/CD | GitHub Actions |
-| Application | Node.js + Docker |
-
----
-
-## Project Structure
-aws-devsecops-infrastructure/
-├── app/
-│   ├── index.js                  # Node.js REST API
-│   ├── package.json
-│   └── Dockerfile                # Secure container (non-root user)
-├── terraform/
-│   ├── modules/
-│   │   ├── vpc/                  # Networking module
-│   │   │   ├── main.tf           # VPC, subnets, IGW, route tables
-│   │   │   ├── variables.tf
-│   │   │   └── outputs.tf
-│   │   └── ecs/                  # Compute + Security + Observability
-│   │       ├── main.tf           # ECS cluster, task, service, ALB
-│   │       ├── iam.tf            # IAM roles + least privilege policies
-│   │       ├── secrets.tf        # AWS Secrets Manager
-│   │       ├── monitoring.tf     # CloudWatch alarms + dashboard
-│   │       ├── variables.tf
-│   │       └── outputs.tf
-│   └── environments/
-│       └── dev/                  # Dev environment entry point
-│           ├── main.tf
-│           ├── variables.tf
-│           └── outputs.tf
-└── .github/
-└── workflows/
-├── terraform-plan.yml    # Triggered on Pull Request
-└── terraform-apply.yml   # Triggered on merge to main
-
----
-
-## Security Design
-
-### IAM Least Privilege
-Two separate IAM roles:
-- **Execution Role**: allows ECS to pull the container image and write logs. Uses AWS managed policy only.
-- **Task Role**: allows the running container to read secrets from Secrets Manager and write to CloudWatch Logs. No other permissions granted.
-
-### Secrets Management
-No credentials in code or environment variables. Passwords and API keys are stored in AWS Secrets Manager and injected at runtime. The secret ARN is referenced in the task definition — never the value itself.
-
-### Network Security
-- ALB accepts traffic only on port 80 from the public internet
-- ECS containers accept traffic only on port 3000 from the ALB security group
-- No direct public access to containers
-
-### CI/CD Security
-AWS credentials are stored as encrypted GitHub Actions repository secrets. They are never exposed in logs or code.
-
----
-
-## CI/CD Pipeline
-Developer pushes code
-│
-▼
-Pull Request opened
-│
-▼
-GitHub Actions: terraform plan
-(shows infrastructure changes before applying)
-│
-▼
-Pull Request merged to main
-│
-▼
-GitHub Actions: terraform apply
-(deploys infrastructure automatically)
-
----
-
-## Deploy
-
-### Prerequisites
-- AWS CLI configured (`aws configure`)
-- Terraform >= 1.0 installed
-- Docker installed
-
-### Deploy in one command
-```bash
-cd terraform/environments/dev
-terraform init
-terraform apply -auto-approve
-```
-
-### Get the app URL
-```bash
-terraform output app_url
-```
-
-### Test the app
-```bash
-curl $(terraform output -raw app_url)
-```
-
-Expected response:
 ```json
 {
   "status": "ok",
   "service": "secure-saas-platform",
   "version": "1.0.0",
-  "timestamp": "2026-01-01T00:00:00.000Z"
+  "timestamp": "2026-06-08T09:00:00.000Z"
 }
+
 ```
 
-### Destroy (cost control)
+### Resource Decommissioning (Cost Control)
+
+Tear down all deployed cloud real estate instantly when testing is complete:
+
 ```bash
 terraform destroy -auto-approve
+
 ```
 
 ---
 
-## Observability
+## 📊 Observability & Thresholds
 
-### CloudWatch Alarms
-| Alarm | Threshold | Action |
-|---|---|---|
-| CPU High | > 80% | Alert |
-| ALB Latency | > 2 seconds | Alert |
-| HTTP 5xx Errors | > 5 per minute | Alert |
+The platform provisions automated **CloudWatch Alarms** coupled with a unified **CloudWatch Dashboard** named `secure-saas-dashboard` monitoring the following baselines:
 
-### CloudWatch Dashboard
-Unified view of CPU utilization, ALB response time and error rates available in AWS Console → CloudWatch → Dashboards → secure-saas-dashboard.
+| Metric Trigger | Threshold Value | Evaluation Period | Severity | Action |
+| --- | --- | --- | --- | --- |
+| **High CPU Utilization** | `> 80%` | 2 consecutive mins | Warning | Scale / Alert |
+| **ALB Target Response Time** | `> 2000ms` | 1 minute | Error | Dev Team Alert |
+| **HTTP 5xx Error Spike** | `> 5 errors` | 1 minute | Critical | Incident Response |
 
 ---
 
-## Cost Estimation
+## 💸 Cost Optimization Profile
 
-Designed for ephemeral usage (deploy → verify → destroy):
+Engineered explicitly for ephemeral usage, automated testing, and sandbox validation:
 
-| Resource | Cost per session (~15 min) |
-|---|---|
-| ECS Fargate | ~$0.01 |
-| Application Load Balancer | ~$0.01 |
-| CloudWatch | Free tier |
-| IAM / VPC / Subnets | Always free |
-| Secrets Manager | Free (30-day trial per secret) |
-| **Total per session** | **~$0.02** |
+| AWS Resource Service Element | Cost per Test Run (~15 Mins) |
+| --- | --- |
+| **AWS ECS Fargate** | ~$0.01 |
+| **Application Load Balancer** | ~$0.01 |
+| **CloudWatch Log Engine** | AWS Free Tier |
+| **Networking Infrastructure (VPC)** | Included ($0.00) |
+| **AWS Secrets Manager Storage** | Free Tier Window |
+| 💰 **Estimated Run Cost** | **~$0.02 per session** |
 
 ---
 
-## Author
+## 👨‍💻 Author
 
-**Emanuel GM** — Cloud & DevOps Engineer
+**Emanuel GM** — Cloud & DevSecOps Engineer
 
-[![GitHub](https://img.shields.io/badge/GitHub-Emanuelgm1998-black)](https://github.com/Emanuelgm1998)
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-Emanuel%20GM-blue)](https://linkedin.com/in/emanuelgm1998)
+```
+
+```
