@@ -1,120 +1,142 @@
 
-#Aquí tienes una versión sustancialmente mejorada y optimizada de tu **README.md**.
-
-He pulido el diseño visual añadiendo una arquitectura en ASCII mucho más clara, una sección estructurada de **DevSecOps Hardening** (que vende mucho mejor tus habilidades de seguridad), íconos limpios, tablas estilizadas y bloques de código listos para copiar y pegar en un solo bloque de Markdown.
+Aquí tienes todo el archivo **README.md** unificado y listo en un solo bloque para que lo copies y pegues directamente en la página de GitHub:
 
 ```markdown
-# 🚀 AWS DevSecOps Infrastructure Platform
+# 🚀 Production-Ready AWS DevSecOps Infrastructure Platform
 
-│ [Core Architecture](#-architecture) │ [Tech Stack](#-tech-stack) │ [Security Design](#-security-design-hardening) │ [CI/CD](#-cicd-pipeline) │ [Deployment](#-deployment-guide) │
+<p align="center">
+  <img src="https://img.shields.io/badge/AWS-232F3E?style=for-the-badge&logo=amazon-aws&logoColor=white" alt="AWS" />
+  <img src="https://img.shields.io/badge/Terraform-7B42BC?style=for-the-badge&logo=terraform&logoColor=white" alt="Terraform" />
+  <img src="https://img.shields.io/badge/GitHub_Actions-2088FF?style=for-the-badge&logo=github-actions&logoColor=white" alt="CI/CD" />
+  <img src="https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white" alt="Docker" />
+  <img src="https://img.shields.io/badge/Security-DevSecOps-red?style=for-the-badge" alt="Security" />
+</p>
 
 ---
 
-Production-ready, highly secure, and compliant cloud infrastructure on AWS built with Terraform, adhering to **DevSecOps best practices and Zero Trust principles**. Fully automated and deployable via a single pipeline or CLI command.
+## 📝 Overview
+
+This repository contains a fully automated, production-ready, and highly secure cloud infrastructure on AWS engineered with Terraform. Adhering to strict **DevSecOps practices and Zero-Trust Architecture guidelines**, this multi-AZ containerized platform can be safely deployed or destroyed using single-line commands or integrated GitOps pipelines.
 
 ## 🏗️ Architecture
 
-```text
-                  [ Internet ]
-                       │
-                       ▼  HTTPS (Port 443 / 80)
-          ┌─────────────────────────┐
-          │ Application Load Balancer│ (Public Subnets)
-          └────────────┬────────────┘
-                       │
-                       ▼  HTTP (Port 3000) ──► Restricted via Security Groups
-          ┌─────────────────────────┐
-          │    AWS ECS Fargate      │ (Private Subnets)
-          │  (Node.js Secure App)   │
-          └───────┬─────────┬───────┘
-                  │         │
-                  │ IAM     ├───────────► [ AWS Secrets Manager ] (Runtime Injection)
-                  ▼         │
-        [ CloudWatch Logs ] └───────────► [ CloudWatch Metrics & Alarms ]
+```mermaid
+graph TD
+    %% Define Styles
+    classDef internet fill:#f9f9f9,stroke:#333,stroke-width:2px;
+    classDef public fill:#e1f5fe,stroke:#0288d1,stroke-width:2px;
+    classDef private fill:#efebe9,stroke:#5d4037,stroke-width:2px;
+    classDef security fill:#ffebee,stroke:#c62828,stroke-width:1px;
+    classDef logging fill:#f1f8e9,stroke:#558b2f,stroke-width:1px;
+
+    %% Ingress Traffic
+    User([Internet Client]) -->|HTTPS / Port 443| ALB[Application Load Balancer]
+    class User internet;
+    class ALB public;
+
+    subgraph AWS VPC Cluster [Amazon VPC Context]
+        subgraph Public Subnets [Public Subnet Layer]
+            ALB
+        end
+
+        subgraph Private Subnets [Private Subnet Layer]
+            direction LR
+            ECS[AWS ECS Fargate Cluster]
+            App[Node.js App Container]
+            ECS --- App
+        end
+    end
+    class Public Subnets public;
+    class Private Subnets private;
+
+    %% Traffic Rules
+    ALB -->|HTTP / Port 3000 Only| ECS
+
+    %% Identity & Secrets Linkage
+    Secrets[(AWS Secrets Manager)] -.->|Secure Runtime Injection| App
+    IAM[IAM Task Role <br> Principle of Least Privilege] ===>|Execution Token| App
+    class Secrets,IAM security;
+
+    %% Telemetry Data Flow
+    App ---->|Structured Logs| CW_Logs[CloudWatch Logs Engine]
+    ALB ---->|Telemetry Metrics| CW_Metrics[CloudWatch Alarms & Dashboards]
+    class CW_Logs,CW_Metrics logging;
 
 ```
 
-* **Infrastructure as Code:** Modular Terraform configuration designed for multi-environment scalability (`dev`, `staging`, `prod`).
-* **CI/CD GitOps:** Fully automated delivery lifecycle powered by GitHub Actions.
-
 ---
 
-## 🛠️ Tech Stack
+## 🛠️ Infrastructure Stack
 
-| Layer | Component | Technology | Description |
+| Architecture Layer | Core Component | Component Technology | Technical Objective / Implementation |
 | --- | --- | --- | --- |
-| **Compute** | Container Orchestration | `AWS ECS Fargate` | Serverless, isolated container execution. |
-| **Networking** | Infrastructure Isolation | `AWS VPC` | Multi-AZ architecture with public/private subnet isolation. |
-| **Traffic Management** | Ingress | `AWS ALB` | Layer 7 routing with health checks and SSL/TLS termination hooks. |
-| **Security** | Secrets Management | `AWS Secrets Manager` | Dynamic runtime credential rotation and ingestion. |
-| **Security** | Identity & Access | `AWS IAM` | Strict Principle of Least Privilege (PoLP) policy mapping. |
-| **Observability** | Monitoring & Alerting | `Amazon CloudWatch` | Structured logging, real-time metrics, automated alarms, and dashboards. |
-| **Automation** | IaC & Pipelines | `Terraform` / `GitHub Actions` | Declarative definitions and integrated GitOps workflow. |
-| **Application** | Microservice Runtime | `Node.js` + `Docker` | Containerized REST API running under a non-root user context. |
+| **Compute** | Container Runtime | `AWS ECS Fargate` | Serverless container abstraction; eliminates EC2 host lifecycle management. |
+| **Networking** | Edge Ingress | `AWS ALB (Layer 7)` | Public-facing distribution with built-in health checks and routing mechanics. |
+| **Networking** | Boundary Isolation | `AWS VPC` | Multi-AZ architecture segmenting public (Ingress) and private (App) subnets. |
+| **Security** | Secrets Engine | `AWS Secrets Manager` | Decoupled runtime injection of data stores credentials and environment secrets. |
+| **Security** | Identity & Access | `AWS IAM` | Fine-grained execution task mapping based on the Principle of Least Privilege (PoLP). |
+| **Observability** | Telemetry / Audit | `Amazon CloudWatch` | Aggregated logging streams, anomalous performance alarms, and telemetry dashboards. |
+| **Automation** | Orchestration / IaC | `Terraform / OpenTofu` | Strictly declarative configuration files built for scaling environments (`dev`, `prod`). |
 
 ---
 
-## 📂 Project Structure
+## 📂 Repository Topology
 
 ```text
 aws-devsecops-infrastructure/
 ├── .github/workflows/
-│   ├── terraform-plan.yml      # Dry-run validation triggered on Pull Requests
-│   └── terraform-apply.yml     # Automated deployment triggered on merge to main
+│   ├── terraform-plan.yml      # Triggered on Pull Requests: Dry-run schema validations
+│   └── terraform-apply.yml     # Triggered on Main Merges: Automated state execution
 ├── app/
-│   ├── index.js                # Lightweight Node.js REST API
-│   ├── package.json            # Node.js dependencies
-│   └── Dockerfile              # Distroless/Non-root secure container definition
+│   ├── index.js                # Minimalist Node.js microservice REST endpoint
+│   ├── package.json            # Application dependencies manifest
+│   └── Dockerfile              # Hardened, non-root user execution container specification
 └── terraform/
     ├── modules/
-    │   ├── vpc/                # Network Topology: VPC, Subnets, IGW, Route Tables
-    │   │   ├── main.tf & variables.tf & outputs.tf
-    │   └── ecs/                # Compute, Security, IAM Policies & Observability
-    │       ├── main.tf         # ECS Cluster, Task Definition, Service, and ALB
-    │       ├── iam.tf          # Fine-grained Execution & Task Roles (PoLP)
-    │       ├── secrets.tf      # Secure parameter store & secret structures
-    │       └── monitoring.tf   # CloudWatch Dashboards and Alarm metrics
+    │   ├── vpc/                # Network Foundation: Gateways, Subnets, and Routing Tables
+    │   └── ecs/                # Elastic Compute, Access Control, and Telemetry Engine
+    │       ├── main.tf         # Main declaration for ECS Cluster, Task, Service, and ALB
+    │       ├── iam.tf          # Least privilege policy scopes for Task and Execution Roles
+    │       ├── secrets.tf      # Dynamic configuration wrappers for AWS Secrets Manager
+    │       └── monitoring.tf   # CloudWatch metric tracking and threshold alarms
     └── environments/
-        └── dev/                # Root environment execution context
-            ├── main.tf         # Module instantiation backend mapping
-            ├── variables.tf    # Dev-specific configuration variables
-            └── outputs.tf      # Exposed deployment outputs
+        └── dev/                # Live Environment instantiation point
 
 ```
 
 ---
 
-## 🔒 Security Design & Hardening
+## 🔒 Hardening & DevSecOps Strategy
 
-### 1. Principle of Least Privilege (PoLP)
+### 🛡️ 1. IAM Decoupled Permissions
 
-The compute tier splits identity execution into two strictly decoupled IAM Roles:
+The execution tier completely isolates platform start-up duties from runtime activities by provisioning dos identidades distintas:
 
-* **ECS Task Execution Role:** Restricted to infrastructure startup requirements (`ecr:PullImage`, `logs:CreateLogStream`, `logs:PutLogEvents`).
-* **ECS Task Role:** The execution context of the application container itself. It **only** possesses access to read its dedicated application secret from Secrets Manager and ship business logs to CloudWatch.
+* **ECS Task Execution Role:** Grants permissions strictly to the AWS ECS engine to pull images from container registries and create basic logging structures (`logs:CreateLogStream`).
+* **ECS Task Role:** The processing scope granted to the application microservice itself. It is limited to reading the exact cryptographic secret string path from Secrets Manager and pushing metric traces to CloudWatch.
 
-### 2. Zero-Trust Network Topology
+### 🔌 2. Restrictive Security Perimeters
 
-* **ALB Protection:** Accepts public traffic exclusively on standard ingress web ports.
-* **Service Isolation:** The ECS Fargate containers are situated within isolated network rings. They block all direct public internet ingress, accepting traffic **only** from the Application Load Balancer via a strict Security Group reference rule on port `3000`.
+* **Public Shielding:** The Application Load Balancer accepts incoming internet packets explicitly on standard port profiles (`80`/`443`).
+* **Zero-Trust East-West Traffic:** The compute node executes inside completely closed subnets. It rejects all public inbound routing, exclusively acknowledging traffic entering through the security group hash belonging to the Load Balancer on port `3000`.
 
-### 3. Runtime Secret Injection
+### 🔑 3. Zero Hardcoded Metadata
 
-No plaintext environment variables, configurations, or credentials ever hit the Git repository or build logs. Sensitive parameters are referenced by ARN within the Terraform definitions, pulling values securely at runtime from **AWS Secrets Manager**.
+Sensitive configurations, tokens, or encryption keys are not embedded into application bundles or repository tracking trees. Variables are mapped as dynamic parameters injected straight into target node processes at runtime via **AWS Secrets Manager**.
 
 ---
 
 ## 🚀 Deployment Guide
 
-### Prerequisites
+### System Prerequisites
 
-* AWS CLI configured (`aws configure`) with administrative or deployment permissions.
-* Terraform CLI installed ($\ge$ 1.0).
-* Docker engine running locally for building assets.
+* AWS CLI initialized with active administrator or deployment credentials.
+* Terraform CLI Installed ($\ge$ 1.0).
+* Local Docker daemon up and running.
 
-### Automated Local Bootstrap
+### One-Command Deployment Setup
 
-Run the setup from the root environment directory:
+Move into the target workspace context and execute the deployment:
 
 ```bash
 cd terraform/environments/dev
@@ -123,34 +145,34 @@ terraform apply -auto-approve
 
 ```
 
-### Verification & Smoke Tests
+### Integration Smoke-Testing
 
-Extract the dynamically generated load balancer endpoint and perform a secure curl validation:
+Query the infrastructure deployment parameters, fetch the load balancer endpoint, and verify response payloads:
 
 ```bash
-# Fetch the active deployment URL
-URL=$(terraform output -raw app_url)
+# Extract the public endpoint domain
+PLATFORM_URL=$(terraform output -raw app_url)
 
-# Run a validation request
-curl -s http://$URL
+# Execute the curl health checker request
+curl -s http://$PLATFORM_URL
 
 ```
 
-Expected healthy response payload:
+**Expected JSON Response Matrix:**
 
 ```json
 {
   "status": "ok",
   "service": "secure-saas-platform",
   "version": "1.0.0",
-  "timestamp": "2026-06-08T09:00:00.000Z"
+  "timestamp": "2026-06-08T09:15:00.000Z"
 }
 
 ```
 
-### Resource Decommissioning (Cost Control)
+### Clean-Up & Cost Control
 
-Tear down all deployed cloud real estate instantly when testing is complete:
+Instantly purge all provisioned components to prevent unnecessary billing:
 
 ```bash
 terraform destroy -auto-approve
@@ -159,34 +181,34 @@ terraform destroy -auto-approve
 
 ---
 
-## 📊 Observability & Thresholds
+## 📊 Telemetry and Real-Time Monitors
 
-The platform provisions automated **CloudWatch Alarms** coupled with a unified **CloudWatch Dashboard** named `secure-saas-dashboard` monitoring the following baselines:
+The monitoring module provisions a centralized **CloudWatch Dashboard** (`secure-saas-dashboard`) linked directly with automated alarm triggers:
 
-| Metric Trigger | Threshold Value | Evaluation Period | Severity | Action |
-| --- | --- | --- | --- | --- |
-| **High CPU Utilization** | `> 80%` | 2 consecutive mins | Warning | Scale / Alert |
-| **ALB Target Response Time** | `> 2000ms` | 1 minute | Error | Dev Team Alert |
-| **HTTP 5xx Error Spike** | `> 5 errors` | 1 minute | Critical | Incident Response |
+| Telemetry Target | Defined Alarm Threshold | Evaluation Window | System Actions |
+| --- | --- | --- | --- |
+| **High CPU Consumption** | `> 80% Utilization` | 2 Continuous Cycles | Automated Alert / Scale Action |
+| **ALB Outbound Latency** | `> 2000 ms` | 1 Minute | DevSecOps Alert Dispatch |
+| **Application Failures** | `> 5 HTTP 5xx Errors` | 1 Minute | Critical System Alert |
 
 ---
 
-## 💸 Cost Optimization Profile
+## 💸 Ephemeral Cost Tracking Profile
 
-Engineered explicitly for ephemeral usage, automated testing, and sandbox validation:
+Optimized to handle Sandbox automation, pipeline verification, and ephemeral test deployments:
 
-| AWS Resource Service Element | Cost per Test Run (~15 Mins) |
+| Cloud Architecture Module | Financial Estimate / Session (15 Mins) |
 | --- | --- |
-| **AWS ECS Fargate** | ~$0.01 |
-| **Application Load Balancer** | ~$0.01 |
-| **CloudWatch Log Engine** | AWS Free Tier |
-| **Networking Infrastructure (VPC)** | Included ($0.00) |
-| **AWS Secrets Manager Storage** | Free Tier Window |
-| 💰 **Estimated Run Cost** | **~$0.02 per session** |
+| **AWS ECS Fargate Compute Engine** | ~$0.01 |
+| **Application Load Balancer Ingress** | ~$0.01 |
+| **Amazon CloudWatch Telemetry Engine** | Included inside Free Tier allowance |
+| **AWS VPC Networking Components** | Always Free ($0.00) |
+| **AWS Secrets Manager Storage** | Active Trial Evaluation Window |
+| 🧮 **Projected Cost Metrics** | **~$0.02 Total per Run** |
 
 ---
 
-## 👨‍💻 Author
+## 👨‍💻 Engineer Portfolio
 
 **Emanuel GM** — Cloud & DevSecOps Engineer
 
