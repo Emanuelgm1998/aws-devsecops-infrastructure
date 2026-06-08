@@ -15,8 +15,8 @@
 
 ## 👤 Engineer Profile
 
-**Emanuel Ernesto González Michea**
-Emanuel Ernesto González Michea
+**Emanuel G.Michea**
+
 
 Portfolio & professional profile:
 LinkedIn
