@@ -13,7 +13,7 @@
 
 ---
 
-## 👤 Engineer Profile
+##  Engineer Profile
 
 **Emanuel G.Michea**
 
@@ -24,7 +24,7 @@ LinkedIn
 
 ---
 
-## 🧭 Overview
+## Overview
 
 This repository implements a **production-grade, multi-AZ AWS infrastructure platform** built with:
 
@@ -38,7 +38,7 @@ It is designed as a **real-world cloud architecture portfolio project** aligned 
 
 ---
 
-## 🏗️ High-Level Architecture
+##  High-Level Architecture
 
 ```mermaid
 flowchart TD
@@ -69,7 +69,7 @@ ALB --> CWM[CloudWatch Metrics]
 
 ---
 
-## 🔐 Zero Trust Security Model
+## Zero Trust Security Model
 
 ### Identity & Access Control
 
@@ -109,7 +109,7 @@ AWS --> MON[CloudWatch Monitoring]
 
 ---
 
-## 🧱 Infrastructure Stack
+## Infrastructure Stack
 
 | Layer         | Service               | Purpose                    |
 | ------------- | --------------------- | -------------------------- |
@@ -122,7 +122,7 @@ AWS --> MON[CloudWatch Monitoring]
 
 ---
 
-## 📁 Project Structure
+##  Project Structure
 
 ```text
 aws-devsecops-infrastructure/
@@ -166,7 +166,7 @@ aws-devsecops-infrastructure/
 
 ---
 
-## 💸 Cost Optimization Strategy
+##  Cost Optimization Strategy
 
 * ECS Fargate: pay-per-use compute model
 * Ephemeral environments (terraform destroy)
@@ -174,11 +174,11 @@ aws-devsecops-infrastructure/
 * Minimal always-on resources
 
 Estimated cost per test deployment:
-👉 ~$0.02 per execution cycle
+ ~$0.02 per execution cycle
 
 ---
 
-## 🚀 Deployment
+##  Deployment
 
 ```bash
 cd terraform/environments/dev
@@ -194,7 +194,7 @@ terraform destroy -auto-approve
 
 ---
 
-## 🧠 Key DevSecOps Principles Demonstrated
+##  Key DevSecOps Principles Demonstrated
 
 * Zero Trust Architecture
 * Immutable infrastructure
