@@ -20,10 +20,10 @@ module "vpc" {
 }
 
 module "ecs" {
-  source           = "../../modules/ecs"
-  project          = var.project
-  vpc_id           = module.vpc.vpc_id
-  public_subnets   = module.vpc.public_subnets
-  container_image  = var.container_image
-  aws_region       = var.aws_region
+  source          = "../../modules/ecs"
+  project         = var.project
+  vpc_id          = module.vpc.vpc_id
+  public_subnets  = module.vpc.public_subnets
+  container_image = var.container_image
+  aws_region      = var.aws_region
 }
