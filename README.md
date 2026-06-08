@@ -1,5 +1,5 @@
 
-# 🚀 Production-Ready AWS DevSecOps Infrastructure Platform
+#  Production-Ready AWS DevSecOps Infrastructure Platform
 
 <p align="center">
   <img src="https://img.shields.io/badge/AWS-232F3E?style=for-the-badge&logo=amazon-aws&logoColor=white" alt="AWS" />
@@ -11,13 +11,13 @@
 
 ---
 
-## 📝 Overview
+## Overview
 
 This repository contains a fully automated, production-ready, and highly secure cloud infrastructure on AWS engineered with Terraform. Adhering to strict **DevSecOps practices and Zero-Trust Architecture guidelines**, this multi-AZ containerized platform can be safely deployed or destroyed using single-line commands or integrated GitOps pipelines.
 
-## 🏗️ Architecture
+##  Architecture
 
-```mermaid
+
 graph TD
     %% Define Styles
     classDef internet fill:#f9f9f9,stroke:#333,stroke-width:2px;
@@ -25,7 +25,7 @@ graph TD
     classDef private fill:#efebe9,stroke:#5d4037,stroke-width:2px;
     classDef security fill:#ffebee,stroke:#c62828,stroke-width:1px;
     classDef logging fill:#f1f8e9,stroke:#558b2f,stroke-width:1px;
-
+    
     %% Ingress Traffic
     User([Internet Client]) -->|HTTPS / Port 443| ALB[Application Load Balancer]
     class User internet;
