@@ -51,28 +51,31 @@ resource "aws_cloudwatch_dashboard" "main" {
       {
         type = "metric"
         properties = {
-          title  = "CPU ECS"
+          title   = "CPU ECS"
+          region  = var.aws_region
           metrics = [["AWS/ECS", "CPUUtilization", "ClusterName", aws_ecs_cluster.main.name]]
-          period = 60
-          stat   = "Average"
+          period  = 60
+          stat    = "Average"
         }
       },
       {
         type = "metric"
         properties = {
-          title  = "Latencia ALB"
+          title   = "Latencia ALB"
+          region  = var.aws_region
           metrics = [["AWS/ApplicationELB", "TargetResponseTime", "LoadBalancer", aws_lb.main.arn_suffix]]
-          period = 60
-          stat   = "Average"
+          period  = 60
+          stat    = "Average"
         }
       },
       {
         type = "metric"
         properties = {
-          title  = "Errores 5xx"
+          title   = "Errores 5xx"
+          region  = var.aws_region
           metrics = [["AWS/ApplicationELB", "HTTPCode_Target_5XX_Count", "LoadBalancer", aws_lb.main.arn_suffix]]
-          period = 60
-          stat   = "Sum"
+          period  = 60
+          stat    = "Sum"
         }
       }
     ]
