@@ -1,4 +1,4 @@
-cat > ~/secure-saas-platform/README.md << 'EOF'
+
 # AWS DevSecOps Infrastructure Platform
 
 Production-ready cloud infrastructure on AWS built with Terraform, following DevSecOps best practices. Deployable in a single command.
