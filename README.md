@@ -1,7 +1,4 @@
 
-Aquí tienes todo el archivo **README.md** unificado y listo en un solo bloque para que lo copies y pegues directamente en la página de GitHub:
-
-```markdown
 # 🚀 Production-Ready AWS DevSecOps Infrastructure Platform
 
 <p align="center">
