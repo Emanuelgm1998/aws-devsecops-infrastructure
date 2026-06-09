@@ -1,4 +1,6 @@
 
+
+```markdown
 # Production-Ready AWS DevSecOps Infrastructure Platform
 
 <p align="center">
@@ -11,16 +13,20 @@
 
 </p>
 
+<p align="center">
+  <a href="https://github.com/Emanuelgm1998/aws-devsecops-infrastructure">
+    <img src="https://img.shields.io/badge/Repository-aws--devsecops--infrastructure-black?style=for-the-badge&logo=github" />
+  </a>
+</p>
+
 ---
 
-##  Engineer Profile
+## Engineer Profile
 
-**Emanuel G.Michea**
+**Emanuel G. Michea** — Cloud & DevOps Engineer
 
-
-Portfolio & professional profile:
-LinkedIn
-[https://www.linkedin.com/in/emanuel-gonzalez-michea/](https://www.linkedin.com/in/emanuel-gonzalez-michea/)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Emanuel%20G.%20Michea-blue?style=flat&logo=linkedin)](https://www.linkedin.com/in/emanuel-gonzalez-michea/)
+[![GitHub](https://img.shields.io/badge/GitHub-Emanuelgm1998-black?style=flat&logo=github)](https://github.com/Emanuelgm1998)
 
 ---
 
@@ -38,7 +44,7 @@ It is designed as a **real-world cloud architecture portfolio project** aligned 
 
 ---
 
-##  High-Level Architecture
+## High-Level Architecture
 
 ```mermaid
 flowchart TD
@@ -46,16 +52,14 @@ flowchart TD
 User[Internet Client] --> ALB[Application Load Balancer]
 
 subgraph VPC[AWS VPC - Multi AZ]
-    
-    subgraph Public[Public Subnets]
-        ALB
-    end
 
-    subgraph Private[Private Subnets]
+    subgraph Public[Public Subnets - AZ-a and AZ-b]
+        ALB
         ECS[AWS ECS Fargate Cluster]
         APP[Node.js Microservice]
         ECS --> APP
     end
+
 end
 
 ALB --> ECS
@@ -67,6 +71,8 @@ APP --> CWL[CloudWatch Logs]
 ALB --> CWM[CloudWatch Metrics]
 ```
 
+> **Note:** Current implementation uses public subnets with Security Group restrictions (ALB → ECS only). Migration to private subnets + NAT Gateway is included in the roadmap.
+
 ---
 
 ## Zero Trust Security Model
@@ -74,26 +80,25 @@ ALB --> CWM[CloudWatch Metrics]
 ### Identity & Access Control
 
 * Separate IAM roles:
-
-  * ECS Task Execution Role (infra only)
+  * ECS Task Execution Role (infrastructure access only)
   * ECS Task Role (application permissions only)
 * Principle of Least Privilege enforced at every layer
 
 ### Network Security
 
-* Private subnets for compute layer (no public IPs)
-* Only ALB exposed to internet (HTTPS 443)
-* Security Group strict inbound rules (ALB → ECS only)
+* ALB is the only internet-facing resource (port 80)
+* ECS containers accept traffic only from ALB security group (port 3000)
+* No direct public access to application containers
 
 ### Secrets Management
 
-* No hardcoded credentials
+* No hardcoded credentials anywhere in code
 * Runtime injection via AWS Secrets Manager
-* Secure environment variable resolution at container startup
+* Secret ARN referenced in task definition — never the value itself
 
 ---
 
-## 🔄 CI/CD Pipeline (GitOps)
+## CI/CD Pipeline (GitOps)
 
 ```mermaid
 flowchart LR
@@ -107,50 +112,52 @@ APPLY --> AWS[Deploy to AWS]
 AWS --> MON[CloudWatch Monitoring]
 ```
 
+AWS credentials are stored as encrypted GitHub Actions repository secrets. Never exposed in logs or code.
+
 ---
 
 ## Infrastructure Stack
 
-| Layer         | Service               | Purpose                    |
-| ------------- | --------------------- | -------------------------- |
-| Compute       | AWS ECS Fargate       | Serverless containers      |
-| Networking    | AWS VPC + ALB         | Secure traffic routing     |
-| Security      | IAM + Secrets Manager | Zero Trust identity model  |
-| Observability | CloudWatch            | Logs, metrics, alarms      |
-| IaC           | Terraform             | Declarative infrastructure |
-| CI/CD         | GitHub Actions        | Automated deployment       |
+| Layer | Service | Purpose |
+|---|---|---|
+| Compute | AWS ECS Fargate | Serverless containers |
+| Networking | AWS VPC + ALB | Secure traffic routing |
+| Security | IAM + Secrets Manager | Zero Trust identity model |
+| Observability | CloudWatch | Logs, metrics, alarms |
+| IaC | Terraform | Declarative infrastructure |
+| CI/CD | GitHub Actions | Automated deployment |
 
 ---
 
-##  Project Structure
+## Project Structure
 
 ```text
 aws-devsecops-infrastructure/
 
 ├── .github/workflows/
-│   ├── terraform-plan.yml
-│   └── terraform-apply.yml
+│   ├── terraform-plan.yml       # Triggered on Pull Request
+│   └── terraform-apply.yml      # Triggered on merge to main
 
 ├── app/
-│   ├── index.js
-│   ├── Dockerfile
+│   ├── index.js                 # Node.js REST API
+│   ├── Dockerfile               # Secure container (non-root user)
 │   └── package.json
 
 └── terraform/
     ├── modules/
-    │   ├── vpc/
+    │   ├── vpc/                 # Networking module
     │   └── ecs/
-    │       ├── main.tf
-    │       ├── iam.tf
-    │       ├── secrets.tf
-    │       └── monitoring.tf
+    │       ├── main.tf          # ECS cluster, task, service, ALB
+    │       ├── iam.tf           # IAM roles + least privilege policies
+    │       ├── secrets.tf       # AWS Secrets Manager
+    │       └── monitoring.tf    # CloudWatch alarms + dashboard
     └── environments/
-        └── dev/
+        └── dev/                 # Dev environment entry point
 ```
 
 ---
 
-## 📡 Observability & Monitoring
+## Observability & Monitoring
 
 * Centralized CloudWatch Dashboard
 * Real-time alerting system
@@ -158,43 +165,67 @@ aws-devsecops-infrastructure/
 
 ### Alert Rules
 
-| Metric    | Threshold | Action                |
-| --------- | --------- | --------------------- |
-| CPU Usage | > 80%     | Alert / Scale trigger |
-| HTTP 5xx  | > 5/min   | Critical alert        |
-| Latency   | > 2s      | Performance warning   |
+| Metric | Threshold | Action |
+|---|---|---|
+| CPU Usage | > 80% | Alert / Scale trigger |
+| HTTP 5xx | > 5/min | Critical alert |
+| Latency | > 2s | Performance warning |
 
 ---
 
-##  Cost Optimization Strategy
+## Cost Optimization Strategy
 
 * ECS Fargate: pay-per-use compute model
-* Ephemeral environments (terraform destroy)
+* Ephemeral environments (terraform destroy when not in use)
 * Free-tier optimized monitoring
 * Minimal always-on resources
 
-Estimated cost per test deployment:
- ~$0.02 per execution cycle
+Estimated cost per test deployment: **~$0.02 per execution cycle**
 
 ---
 
-##  Deployment
+## Deployment
 
+### Prerequisites
+- AWS CLI configured (`aws configure`)
+- Terraform >= 1.0 installed
+- Docker installed
+
+### Deploy
 ```bash
 cd terraform/environments/dev
 terraform init
 terraform apply -auto-approve
 ```
 
-### Destroy stack
+### Get app URL
+```bash
+terraform output app_url
+```
 
+### Test
+```bash
+curl $(terraform output -raw app_url)
+```
+
+Expected response:
+```json
+{
+  "status": "ok",
+  "service": "secure-saas-platform",
+  "version": "1.0.0",
+  "timestamp": "2026-01-01T00:00:00.000Z"
+}
+```
+
+### Destroy
 ```bash
 terraform destroy -auto-approve
 ```
 
 ---
 
-##  Key DevSecOps Principles Demonstrated
+## Key DevSecOps Principles Demonstrated
 
 * Zero Trust Architecture
 * Immutable infrastructure
@@ -206,7 +237,18 @@ terraform destroy -auto-approve
 
 ---
 
-## 🧾 Why this project matters
+## Roadmap
+
+- [ ] OIDC GitHub Actions → AWS (replace static Access Keys)
+- [ ] Terraform Remote State (S3 + DynamoDB locking)
+- [ ] Private subnets + NAT Gateway
+- [ ] Trivy + Checkov security scanning in CI/CD pipeline
+- [ ] staging and prod environments
+- [ ] HTTPS with ACM certificate on ALB
+
+---
+
+## Why this project matters
 
 This project demonstrates **production-level thinking**, not just AWS usage:
 
@@ -215,4 +257,8 @@ This project demonstrates **production-level thinking**, not just AWS usage:
 * Scalable container architecture
 * Recruiter-ready documentation
 * Cloud engineering maturity
+```
 
+---
+
+Pégalo directo en GitHub editando el README. Las 4 mejoras que agregué fueron el badge con link al repo, la corrección del diagrama con la nota honesta sobre subnets públicas, los badges de LinkedIn/GitHub más visuales, y el Roadmap al final.
