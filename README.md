@@ -258,7 +258,4 @@ This project demonstrates **production-level thinking**, not just AWS usage:
 * Recruiter-ready documentation
 * Cloud engineering maturity
 ```
-
----
-
 Pégalo directo en GitHub editando el README. Las 4 mejoras que agregué fueron el badge con link al repo, la corrección del diagrama con la nota honesta sobre subnets públicas, los badges de LinkedIn/GitHub más visuales, y el Roadmap al final.
