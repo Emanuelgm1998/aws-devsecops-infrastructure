@@ -1,7 +1,6 @@
-
-
-markdown
-# Production-Ready AWS DevSecOps Infrastructure Platform
+```markdown
+# AWS DevSecOps Infrastructure Platform
+### Production-Oriented Cloud Engineering Portfolio Project
 
 <p align="center">
 
@@ -32,7 +31,7 @@ markdown
 
 ## Overview
 
-This repository implements a **production-grade, multi-AZ AWS infrastructure platform** built with:
+This repository implements a **production-oriented, multi-AZ AWS infrastructure platform** built with:
 
 * Infrastructure as Code (Terraform)
 * DevSecOps automation (GitHub Actions)
@@ -41,6 +40,21 @@ This repository implements a **production-grade, multi-AZ AWS infrastructure pla
 * Full observability (CloudWatch)
 
 It is designed as a **real-world cloud architecture portfolio project** aligned with modern DevSecOps engineering roles.
+
+---
+
+## Architecture Decisions
+
+This platform was designed following production engineering principles:
+
+- Infrastructure as Code as the single source of truth
+- Immutable deployments using Terraform
+- Separation of infrastructure and application responsibilities
+- Security-first architecture based on Zero Trust concepts
+- Observability integrated from the beginning
+- Modular design for future multi-environment expansion
+
+The project intentionally prioritizes security, automation, and maintainability over rapid deployment.
 
 ---
 
@@ -75,26 +89,30 @@ ALB --> CWM[CloudWatch Metrics]
 
 ---
 
-## Zero Trust Security Model
+## Security Controls
 
-### Identity & Access Control
+### Implemented
 
-* Separate IAM roles:
-  * ECS Task Execution Role (infrastructure access only)
-  * ECS Task Role (application permissions only)
-* Principle of Least Privilege enforced at every layer
+| Control | Status |
+|---|---|
+| Least Privilege IAM | ✅ Implemented |
+| Secrets Manager Integration | ✅ Implemented |
+| Container Non-Root User | ✅ Implemented |
+| Security Group Segmentation | ✅ Implemented |
+| Infrastructure as Code | ✅ Implemented |
+| Audit Logging | ✅ Implemented |
+| CloudWatch Monitoring | ✅ Implemented |
 
-### Network Security
+### Planned
 
-* ALB is the only internet-facing resource (port 80)
-* ECS containers accept traffic only from ALB security group (port 3000)
-* No direct public access to application containers
-
-### Secrets Management
-
-* No hardcoded credentials anywhere in code
-* Runtime injection via AWS Secrets Manager
-* Secret ARN referenced in task definition — never the value itself
+| Control | Status |
+|---|---|
+| OIDC Federation (replace static keys) | 🔲 Roadmap |
+| AWS WAF | 🔲 Roadmap |
+| Security Hub | 🔲 Roadmap |
+| GuardDuty | 🔲 Roadmap |
+| AWS Config | 🔲 Roadmap |
+| Trivy + Checkov in CI/CD | 🔲 Roadmap |
 
 ---
 
@@ -112,7 +130,7 @@ APPLY --> AWS[Deploy to AWS]
 AWS --> MON[CloudWatch Monitoring]
 ```
 
-AWS credentials are stored as encrypted GitHub Actions repository secrets. Never exposed in logs or code.
+AWS credentials stored as encrypted GitHub Actions repository secrets. Never exposed in logs or code.
 
 ---
 
@@ -173,6 +191,35 @@ aws-devsecops-infrastructure/
 
 ---
 
+## Professional Skills Demonstrated
+
+### Cloud Engineering
+- AWS Networking (VPC, Subnets, IGW, Route Tables)
+- ECS Fargate (serverless container orchestration)
+- Application Load Balancing
+- Secrets Management
+- Monitoring and Logging
+
+### DevOps
+- Terraform (modular IaC)
+- GitHub Actions (CI/CD automation)
+- Infrastructure Lifecycle Management
+- Ephemeral environment strategy
+
+### Security
+- Zero Trust Principles
+- IAM Least Privilege
+- Secure Secrets Handling
+- Secure Container Practices (non-root user)
+
+### Software Delivery
+- GitOps Workflow
+- Pull Request Validation
+- Automated Deployments
+- Change Control
+
+---
+
 ## Cost Optimization Strategy
 
 * ECS Fargate: pay-per-use compute model
@@ -225,15 +272,16 @@ terraform destroy -auto-approve
 
 ---
 
-## Key DevSecOps Principles Demonstrated
+## Deployment Evidence
 
-* Zero Trust Architecture
-* Immutable infrastructure
-* GitOps-based deployments
-* Least privilege IAM design
-* Secrets isolation
-* Multi-AZ resiliency
-* Observability-first design
+The repository includes real infrastructure deployments validated in AWS:
+
+- Terraform execution plans (18+ resources)
+- ECS Fargate service running and responding
+- CloudWatch dashboard active
+- CI/CD pipeline execution via GitHub Actions
+
+Screenshots and deployment evidence will be maintained as the project evolves.
 
 ---
 
@@ -245,17 +293,19 @@ terraform destroy -auto-approve
 - [ ] Trivy + Checkov security scanning in CI/CD pipeline
 - [ ] staging and prod environments
 - [ ] HTTPS with ACM certificate on ALB
+- [ ] AWS WAF + GuardDuty + Security Hub
 
 ---
 
-## Why this project matters
+## Business Value
 
-This project demonstrates **production-level thinking**, not just AWS usage:
+This project demonstrates the ability to:
 
-* Security-first design (not afterthought)
-* Real CI/CD pipeline (like enterprise teams)
-* Scalable container architecture
-* Recruiter-ready documentation
-* Cloud engineering maturity
+- Design secure cloud infrastructure from scratch
+- Automate deployments through CI/CD pipelines
+- Apply infrastructure security best practices
+- Build maintainable and scalable cloud environments
+- Operate production-oriented AWS workloads
+
+The architecture reflects engineering decisions commonly found in modern cloud-native organizations.
 ```
-Pégalo directo en GitHub editando el README. Las 4 mejoras que agregué fueron el badge con link al repo, la corrección del diagrama con la nota honesta sobre subnets públicas, los badges de LinkedIn/GitHub más visuales, y el Roadmap al final.
