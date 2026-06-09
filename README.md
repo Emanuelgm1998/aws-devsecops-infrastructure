@@ -1,4 +1,4 @@
-```markdown
+
 # AWS DevSecOps Infrastructure Platform
 ### Production-Oriented Cloud Engineering Portfolio Project
 
