@@ -1,6 +1,6 @@
 
 
-```markdown
+markdown
 # Production-Ready AWS DevSecOps Infrastructure Platform
 
 <p align="center">
