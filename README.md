@@ -308,4 +308,3 @@ This project demonstrates the ability to:
 - Operate production-oriented AWS workloads
 
 The architecture reflects engineering decisions commonly found in modern cloud-native organizations.
-```
