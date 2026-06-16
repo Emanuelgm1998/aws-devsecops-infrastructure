@@ -20,7 +20,7 @@
 
 ---
 
-## Engineer Profile
+## Engineer
 
 **Emanuel G. Michea** — Cloud & DevOps Engineer
 
