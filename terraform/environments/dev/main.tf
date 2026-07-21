@@ -30,4 +30,5 @@ module "ecs" {
   public_subnets  = module.vpc.public_subnets
   container_image = var.container_image
   aws_region      = var.aws_region
+  alert_email     = var.alert_email
 }

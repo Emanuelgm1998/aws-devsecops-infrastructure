@@ -8,6 +8,8 @@ resource "aws_cloudwatch_metric_alarm" "cpu_high" {
   statistic           = "Average"
   threshold           = 80
   alarm_description   = "CPU superó 80%"
+  alarm_actions       = [aws_sns_topic.alerts.arn]
+  ok_actions          = [aws_sns_topic.alerts.arn]
   dimensions = {
     ClusterName = aws_ecs_cluster.main.name
     ServiceName = aws_ecs_service.main.name
@@ -24,6 +26,8 @@ resource "aws_cloudwatch_metric_alarm" "alb_5xx" {
   statistic           = "Sum"
   threshold           = 5
   alarm_description   = "Errores 5xx superaron umbral"
+  alarm_actions       = [aws_sns_topic.alerts.arn]
+  ok_actions          = [aws_sns_topic.alerts.arn]
   dimensions = {
     LoadBalancer = aws_lb.main.arn_suffix
   }
@@ -39,6 +43,8 @@ resource "aws_cloudwatch_metric_alarm" "alb_latency" {
   statistic           = "Average"
   threshold           = 2
   alarm_description   = "Latencia superó 2 segundos"
+  alarm_actions       = [aws_sns_topic.alerts.arn]
+  ok_actions          = [aws_sns_topic.alerts.arn]
   dimensions = {
     LoadBalancer = aws_lb.main.arn_suffix
   }
