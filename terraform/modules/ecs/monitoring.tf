@@ -7,6 +7,7 @@ resource "aws_cloudwatch_metric_alarm" "cpu_high" {
   period              = 60
   statistic           = "Average"
   threshold           = 80
+  treat_missing_data  = "notBreaching"
   alarm_description   = "CPU superó 80%"
   alarm_actions       = [aws_sns_topic.alerts.arn]
   ok_actions          = [aws_sns_topic.alerts.arn]
@@ -25,6 +26,7 @@ resource "aws_cloudwatch_metric_alarm" "alb_5xx" {
   period              = 60
   statistic           = "Sum"
   threshold           = 5
+  treat_missing_data  = "notBreaching"
   alarm_description   = "Errores 5xx superaron umbral"
   alarm_actions       = [aws_sns_topic.alerts.arn]
   ok_actions          = [aws_sns_topic.alerts.arn]
@@ -42,6 +44,7 @@ resource "aws_cloudwatch_metric_alarm" "alb_latency" {
   period              = 60
   statistic           = "Average"
   threshold           = 2
+  treat_missing_data  = "notBreaching"
   alarm_description   = "Latencia superó 2 segundos"
   alarm_actions       = [aws_sns_topic.alerts.arn]
   ok_actions          = [aws_sns_topic.alerts.arn]
