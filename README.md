@@ -77,12 +77,17 @@ subgraph VPC[AWS VPC - Multi AZ]
 end
 
 ALB --> ECS
+AS[Application Auto Scaling] --> ECS
 
 Secrets[AWS Secrets Manager] --> APP
 IAM[IAM Roles - Least Privilege] --> APP
 
 APP --> CWL[CloudWatch Logs]
 ALB --> CWM[CloudWatch Metrics]
+CWM --> AS
+CWM --> ALARMS[CloudWatch Alarms]
+ALARMS --> SNS[Amazon SNS]
+SNS --> EMAIL[Email Notifications]
 ```
 
 > **Note:** Current implementation uses public subnets with Security Group restrictions (ALB → ECS only). Migration to private subnets + NAT Gateway is included in the roadmap.
@@ -102,17 +107,17 @@ ALB --> CWM[CloudWatch Metrics]
 | Infrastructure as Code | ✅ Implemented |
 | Audit Logging | ✅ Implemented |
 | CloudWatch Monitoring | ✅ Implemented |
+| OIDC Federation | ✅ Implemented |
+| Trivy + Checkov in CI/CD | ✅ Implemented |
+| Terraform Remote State | ✅ Implemented |
 
 ### Planned
 
 | Control | Status |
 |---|---|
-| OIDC Federation (replace static keys) | 🔲 Roadmap |
 | AWS WAF | 🔲 Roadmap |
 | Security Hub | 🔲 Roadmap |
 | GuardDuty | 🔲 Roadmap |
-| AWS Config | 🔲 Roadmap |
-| Trivy + Checkov in CI/CD | 🔲 Roadmap |
 
 ---
 
@@ -130,7 +135,7 @@ APPLY --> AWS[Deploy to AWS]
 AWS --> MON[CloudWatch Monitoring]
 ```
 
-AWS credentials stored as encrypted GitHub Actions repository secrets. Never exposed in logs or code.
+GitHub Actions authenticates to AWS through short-lived OIDC credentials. Static AWS access keys are not stored in the repository.
 
 ---
 
@@ -164,11 +169,14 @@ aws-devsecops-infrastructure/
 └── terraform/
     ├── modules/
     │   ├── vpc/                 # Networking module
+    │   ├── iam-oidc/            # GitHub Actions OIDC federation
     │   └── ecs/
     │       ├── main.tf          # ECS cluster, task, service, ALB
     │       ├── iam.tf           # IAM roles + least privilege policies
     │       ├── secrets.tf       # AWS Secrets Manager
+    │       ├── sns.tf           # Alarm email notifications
     │       └── monitoring.tf    # CloudWatch alarms + dashboard
+    ├── bootstrap/               # One-time remote state resources
     └── environments/
         └── dev/                 # Dev environment entry point
 ```
@@ -287,13 +295,23 @@ Screenshots and deployment evidence will be maintained as the project evolves.
 
 ## Roadmap
 
-- [ ] OIDC GitHub Actions → AWS (replace static Access Keys)
-- [ ] Terraform Remote State (S3 + DynamoDB locking)
 - [ ] Private subnets + NAT Gateway
-- [ ] Trivy + Checkov security scanning in CI/CD pipeline
 - [ ] staging and prod environments
 - [ ] HTTPS with ACM certificate on ALB
 - [ ] AWS WAF + GuardDuty + Security Hub
+
+---
+
+## Changelog
+
+### 2026-07-21
+
+- Replaced hardcoded application secrets with generated 24-character passwords.
+- Connected all CloudWatch alarms to email notifications through Amazon SNS.
+- Added CPU target-tracking autoscaling for the ECS service.
+- Added versioned S3 remote state with DynamoDB locking and a one-time bootstrap module.
+- Migrated GitHub Actions authentication from static access keys to AWS OIDC federation.
+- Integrated Checkov IaC scanning and Trivy container scanning into the pull request pipeline.
 
 ---
 
