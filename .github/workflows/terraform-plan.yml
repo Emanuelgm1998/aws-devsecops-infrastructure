@@ -11,6 +11,8 @@ permissions:
 jobs:
   plan:
     runs-on: ubuntu-latest
+    env:
+      TF_VAR_alert_email: ${{ vars.ALERT_EMAIL || 'awsgmfree@gmail.com' }}
     steps:
       - uses: actions/checkout@v4
 
