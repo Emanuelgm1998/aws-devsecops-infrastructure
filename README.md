@@ -137,6 +137,10 @@ AWS --> MON[CloudWatch Monitoring]
 
 GitHub Actions authenticates to AWS through short-lived OIDC credentials. Static AWS access keys are not stored in the repository.
 
+<p align="center">
+  <img src="docs/evidence/EVIDENCIA 8.png" width="800" alt="GitHub Actions - Terraform Apply success" />
+</p>
+
 ---
 
 ## Infrastructure Stack
@@ -196,6 +200,18 @@ aws-devsecops-infrastructure/
 | CPU Usage | > 80% | Alert / Scale trigger |
 | HTTP 5xx | > 5/min | Critical alert |
 | Latency | > 2s | Performance warning |
+
+<p align="center">
+  <img src="docs/evidence/EVIDENCIA 6.png" width="800" alt="CloudWatch dashboard: CPU, latency, 5xx" />
+</p>
+
+<p align="center">
+  <img src="docs/evidence/EVIDENCIA 5.png" width="800" alt="CloudWatch alarms list" />
+</p>
+
+<p align="center">
+  <img src="docs/evidence/EVIDENCIA 7.png" width="800" alt="SNS topic with confirmed email subscription" />
+</p>
 
 ---
 
@@ -273,6 +289,10 @@ Expected response:
 }
 ```
 
+<p align="center">
+  <img src="docs/evidence/EVIDENCIA 9.png" width="300" alt="Health endpoint response from mobile browser" />
+</p>
+
 ### Destroy
 ```bash
 terraform destroy -auto-approve
@@ -290,6 +310,14 @@ The repository includes real infrastructure deployments validated in AWS:
 - CI/CD pipeline execution via GitHub Actions
 
 Screenshots and deployment evidence will be maintained as the project evolves.
+
+<p align="center">
+  <img src="docs/evidence/EVIDENCIA 10.png" width="800" alt="ALB details: Active, Internet-facing, multi-AZ" />
+</p>
+
+<p align="center">
+  <img src="docs/evidence/EVIDENCIA 11.png" width="800" alt="ECS service: 1/1 tasks, target healthy" />
+</p>
 
 ---
 
