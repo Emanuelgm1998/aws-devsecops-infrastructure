@@ -1,6 +1,13 @@
 
-# AWS DevSecOps Infrastructure Platform
-### Production-Oriented Cloud Engineering Portfolio Project
+<p align="center">
+  <img src="docs/assets/aws-devsecops-banner.png" width="100%" alt="AWS DevSecOps Infrastructure — Secure, Automated, Observable" />
+</p>
+
+<h1 align="center">AWS DevSecOps Infrastructure Platform</h1>
+
+<p align="center">
+  <strong>Production-oriented AWS infrastructure engineered for security, automation, and observability.</strong>
+</p>
 
 <p align="center">
 
@@ -360,6 +367,14 @@ The architecture reflects engineering decisions commonly found in modern cloud-n
 
 ## License
 
-This project is licensed under the MIT License.
+**Proprietary software — All Rights Reserved.**
 
-Copyright (c) 2026 Emanuel G. Michea
+Copyright © 2026 **Emanuel G. Michea**.
+
+The source code, infrastructure definitions, documentation, architecture, and visual assets in this repository may not be copied, modified, redistributed, sublicensed, or used commercially without prior written authorization from the copyright holder.
+
+For commercial licensing, implementation, consulting, or acquisition inquiries, contact:
+
+[![LinkedIn](https://img.shields.io/badge/Contact-Emanuel%20G.%20Michea-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/emanuel-gonzalez-michea/)
+
+See the [LICENSE](LICENSE) file for the complete terms.
