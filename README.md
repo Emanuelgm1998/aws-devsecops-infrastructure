@@ -50,6 +50,18 @@ It is designed as a **real-world cloud architecture portfolio project** aligned 
 
 ---
 
+## Platform Highlights
+
+| Engineering Pillar | Production-Oriented Implementation |
+|---|---|
+| Secure access | GitHub OIDC federation, least-privilege IAM, Secrets Manager, and non-root containers |
+| Automated delivery | Pull-request validation, Terraform plan/apply workflows, Checkov, and Trivy scanning |
+| Resilient runtime | Multi-AZ load balancing, ECS Fargate, health checks, and target-tracking autoscaling |
+| Operational visibility | CloudWatch dashboards, service alarms, and SNS email notifications |
+| Controlled infrastructure | Modular Terraform with versioned remote state and DynamoDB locking |
+
+---
+
 ## Architecture Decisions
 
 This platform was designed following production engineering principles:
