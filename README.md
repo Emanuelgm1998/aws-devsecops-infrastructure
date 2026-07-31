@@ -145,16 +145,18 @@ SNS --> EMAIL[Email Notifications]
 ```mermaid
 flowchart LR
 
-PR[Pull Request] --> VALIDATE[Security Scans + Terraform Validate]
+PUSH[Push or Pull Request] --> VALIDATE[Security Scans + Terraform Validate]
 VALIDATE --> REVIEW[Code Review / Validation]
 REVIEW --> MERGE[Merge to Main]
-MERGE --> APPLY[Terraform Apply]
+MERGE --> GREEN[Account-independent green CI]
+GREEN --> MANUAL[Optional manual deployment]
+MANUAL --> APPLY[Terraform Apply]
 APPLY --> AWS[Deploy to AWS]
 
 AWS --> MON[CloudWatch Monitoring]
 ```
 
-GitHub Actions authenticates to AWS through short-lived OIDC credentials. Static AWS access keys are not stored in the repository.
+Quality checks run without AWS credentials, so deleting or disconnecting an AWS account does not break CI. The optional manual deployment authenticates through short-lived GitHub OIDC credentials; static AWS access keys are never stored in the repository.
 
 <p align="center">
   <img src="docs/evidence/EVIDENCIA 8.png" width="800" alt="GitHub Actions - Terraform Apply success" />
@@ -181,7 +183,7 @@ GitHub Actions authenticates to AWS through short-lived OIDC credentials. Static
 aws-devsecops-infrastructure/
 
 ├── .github/workflows/
-│   ├── terraform-plan.yml       # Triggered on Pull Request
+│   ├── terraform-plan.yml       # Security and Terraform CI on PRs and main
 │   └── terraform-apply.yml      # Manually triggered deployment
 
 ├── app/
@@ -276,12 +278,40 @@ Estimated cost per test deployment: **~$0.02 per execution cycle**
 
 ## Deployment
 
+### Local Quick Start (no AWS account required)
+
+The included product demo starts with one command:
+
+```bash
+make start
+```
+
+Open <http://localhost:3000> or verify it from the terminal:
+
+```bash
+make health
+```
+
+Useful lifecycle commands:
+
+```bash
+make status
+make logs
+make stop
+```
+
+Set `APP_PORT` if port 3000 is occupied, for example `APP_PORT=8080 make start`.
+
+### Optional AWS Deployment
+
+AWS is not required to evaluate, run, or test the project. Provisioning the cloud architecture is an optional operation for customers with their own AWS account.
+
 ### Prerequisites
 - AWS CLI configured (`aws configure`)
 - Terraform >= 1.0 installed
 - Docker installed
 
-### Deploy
+### Deploy to AWS
 ```bash
 cd terraform/environments/dev
 terraform init

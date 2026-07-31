@@ -10,6 +10,7 @@ permissions:
 jobs:
   apply:
     runs-on: ubuntu-latest
+    environment: aws-dev
     env:
       AWS_OIDC_ROLE_ARN: ${{ vars.AWS_OIDC_ROLE_ARN }}
       TF_STATE_BUCKET: ${{ vars.TF_STATE_BUCKET }}
@@ -28,6 +29,9 @@ jobs:
               exit 1
             fi
           done
+
+      - name: Deployment notice
+        run: echo "Deploying to the optional AWS environment. Local use and CI do not require AWS credentials."
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v4

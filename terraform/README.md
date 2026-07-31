@@ -1,44 +1,42 @@
-# Secure SaaS Platform (AWS DevSecOps Project)
+# AWS ECS Fargate Infrastructure
 
-## 🚀 Overview
-This project is a production-style SaaS cloud platform built on AWS using Infrastructure as Code (Terraform) and Kubernetes (EKS).
+This directory provisions the optional AWS runtime for the project. The local demo and CI checks do not require an AWS account.
 
-It demonstrates:
-- Cloud Architecture (AWS VPC, EKS)
-- DevSecOps practices
-- Infrastructure as Code (Terraform)
-- Scalable SaaS design principles
+## Architecture
 
----
+- Multi-AZ VPC and public subnets
+- Application Load Balancer
+- ECS Fargate service and container health checks
+- Least-privilege IAM roles and GitHub OIDC federation
+- AWS Secrets Manager
+- CloudWatch logs, dashboard, alarms, and SNS notifications
+- S3 remote state with DynamoDB locking
 
-## 🧱 Architecture
-- AWS VPC (isolated network)
-- Public & Private Subnets
-- Amazon EKS Cluster
-- Managed Node Groups (EC2)
-- IAM Roles & Policies
+## Layout
 
----
+- `bootstrap/`: one-time remote-state resources
+- `environments/dev/`: deployable development environment
+- `modules/vpc/`: networking
+- `modules/ecs/`: compute, load balancing, secrets, and observability
+- `modules/iam-oidc/`: GitHub Actions federation
 
-## 🔐 Security Design
-- IAM least privilege roles
-- Private subnets for worker nodes
-- Controlled access to Kubernetes cluster
+## Validation without AWS credentials
 
----
-
-## ⚙️ Tech Stack
-- AWS (EKS, VPC, IAM, EC2)
-- Terraform
-- Kubernetes
-- Linux CLI
-
----
-
-## 💰 Cost Control
-⚠️ This project is designed for short-term deployment only.
-
-Recommended workflow:
 ```bash
-terraform apply
-terraform destroy
+terraform fmt -check -recursive
+terraform -chdir=environments/dev init -backend=false
+terraform -chdir=environments/dev validate
+```
+
+## Deployment
+
+Create the backend once, configure the required GitHub repository variables, and run the `Terraform Apply` workflow manually. This workflow is intentionally never triggered by a push.
+
+Required repository variables:
+
+- `AWS_OIDC_ROLE_ARN`
+- `TF_STATE_BUCKET`
+- `TF_LOCK_TABLE`
+- `ALERT_EMAIL`
+
+Destroy cloud resources when the evaluation is complete to avoid ongoing charges.

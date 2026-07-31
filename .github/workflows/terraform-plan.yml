@@ -1,14 +1,20 @@
-name: Terraform Plan
+name: Terraform CI
 
 on:
+  push:
+    branches: [main]
   pull_request:
     branches: [main]
 
 permissions:
   contents: read
 
+concurrency:
+  group: terraform-ci-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  plan:
+  validate:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
@@ -22,6 +28,9 @@ jobs:
 
       - name: Build application image for scanning
         run: docker build --tag secure-saas-ci:scan app/
+
+      - name: Test application entrypoint
+        run: docker run --rm secure-saas-ci:scan node --check index.js
 
       - name: Trivy container vulnerability scan
         uses: aquasecurity/trivy-action@master
