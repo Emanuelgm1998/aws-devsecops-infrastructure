@@ -13,8 +13,10 @@ provider "aws" {
   region = "us-east-1"
 }
 
+data "aws_caller_identity" "current" {}
+
 resource "aws_s3_bucket" "terraform_state" {
-  bucket = "secure-saas-terraform-state-747747309806"
+  bucket = "secure-saas-terraform-state-${data.aws_caller_identity.current.account_id}"
 
   tags = {
     Project = "secure-saas"

@@ -145,8 +145,8 @@ SNS --> EMAIL[Email Notifications]
 ```mermaid
 flowchart LR
 
-PR[Pull Request] --> PLAN[Terraform Plan - GitHub Actions]
-PLAN --> REVIEW[Code Review / Validation]
+PR[Pull Request] --> VALIDATE[Security Scans + Terraform Validate]
+VALIDATE --> REVIEW[Code Review / Validation]
 REVIEW --> MERGE[Merge to Main]
 MERGE --> APPLY[Terraform Apply]
 APPLY --> AWS[Deploy to AWS]
@@ -182,7 +182,7 @@ aws-devsecops-infrastructure/
 
 ├── .github/workflows/
 │   ├── terraform-plan.yml       # Triggered on Pull Request
-│   └── terraform-apply.yml      # Triggered on merge to main
+│   └── terraform-apply.yml      # Manually triggered deployment
 
 ├── app/
 │   ├── index.js                 # Node.js REST API
