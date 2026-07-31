@@ -55,7 +55,7 @@ It is designed as a **real-world cloud architecture portfolio project** aligned 
 | Engineering Pillar | Production-Oriented Implementation |
 |---|---|
 | Secure access | GitHub OIDC federation, least-privilege IAM, Secrets Manager, and non-root containers |
-| Automated delivery | Pull-request validation, Terraform plan/apply workflows, Checkov, and Trivy scanning |
+| Automated delivery | Push/pull-request validation, manual Terraform deployment, blocking Checkov baseline, and Trivy scanning |
 | Resilient runtime | Multi-AZ load balancing, ECS Fargate, health checks, and target-tracking autoscaling |
 | Operational visibility | CloudWatch dashboards, service alarms, and SNS email notifications |
 | Controlled infrastructure | Modular Terraform with versioned remote state and DynamoDB locking |
@@ -376,6 +376,8 @@ Screenshots and deployment evidence will be maintained as the project evolves.
 - [ ] staging and prod environments
 - [ ] HTTPS with ACM certificate on ALB
 - [ ] AWS WAF + GuardDuty + Security Hub
+- [ ] Customer-managed KMS keys and automatic secret rotation
+- [ ] Replace the deployment role's broad bootstrap policy with scoped per-service permissions
 
 ---
 
