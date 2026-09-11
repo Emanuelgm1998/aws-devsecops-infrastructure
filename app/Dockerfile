@@ -5,7 +5,8 @@ WORKDIR /app
 COPY package.json .
 COPY index.js .
 
-RUN npm install -g npm@11.18.0
+RUN apk upgrade --no-cache
+RUN npm install -g npm@12.0.2
 
 RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 
