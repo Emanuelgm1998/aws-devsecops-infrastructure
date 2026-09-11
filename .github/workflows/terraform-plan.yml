@@ -43,7 +43,6 @@ jobs:
           format: table
           exit-code: "1"
           severity: CRITICAL,HIGH
-          ignorefile: .trivyignore
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v4
