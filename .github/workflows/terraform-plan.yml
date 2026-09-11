@@ -17,7 +17,16 @@ jobs:
   validate:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Run application unit tests
+        run: npm test
+        working-directory: app
 
       - name: Checkov Terraform scan
         uses: bridgecrewio/checkov-action@master
@@ -37,7 +46,7 @@ jobs:
         run: docker run --rm secure-saas-ci:scan node --check index.js
 
       - name: Trivy container vulnerability scan
-        uses: aquasecurity/trivy-action@master
+        uses: aquasecurity/trivy-action@0.28.0
         with:
           image-ref: secure-saas-ci:scan
           format: table

@@ -4,14 +4,16 @@
 Plataforma SaaS en AWS que permite a múltiples empresas usar una API segura con aislamiento total por tenant.
 
 ## Arquitectura
-- Kubernetes (EKS)
-- Multi-tenant por namespace
-- Zero Trust security model
+- AWS ECS Fargate (serverless container orchestration)
+- Application Load Balancer (ALB) multi-AZ
+- Zero Trust security model & Security Group segmentation
+- AWS Secrets Manager & OIDC GitHub Actions federation
 
-## Usuarios
-- Admin platform
-- Tenant companies
-- End users per tenant
+## Componentes
+- Microservicio REST API (Node.js)
+- Cluster ECS & Task Definitions con usuario no-root
+- Observabilidad CloudWatch (Logs, Métricas, Alarmas, Dashboards) y SNS
+- Infraestructura modular como código (Terraform) con estado remoto en S3 y DynamoDB
 
 ## Principios
 - Zero Trust

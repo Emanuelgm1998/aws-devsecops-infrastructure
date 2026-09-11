@@ -37,6 +37,10 @@ resource "aws_iam_role" "github_actions" {
   })
 }
 
+# Security Notice: AdministratorAccess is attached for initial bootstrap/dev convenience.
+# For strict Zero Trust production deployments, replace this broad managed policy
+# with a scoped least-privilege IAM policy limited to VPC, ECS, CloudWatch, ALB,
+# and Secrets Manager operations as tracked in the project roadmap.
 resource "aws_iam_role_policy_attachment" "terraform" {
   role       = aws_iam_role.github_actions.name
   policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"

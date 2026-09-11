@@ -25,6 +25,11 @@
   </a>
 </p>
 
+<p align="center">
+  <a href="README.md"><strong>English 🇺🇸</strong></a> &nbsp;•&nbsp; <a href="README.es.md"><strong>Español 🇪🇸</strong></a>
+</p>
+
+
 ---
 
 ## Engineer
@@ -110,6 +115,46 @@ SNS --> EMAIL[Email Notifications]
 ```
 
 > **Note:** Current implementation uses public subnets with Security Group restrictions (ALB → ECS only). Migration to private subnets + NAT Gateway is included in the roadmap.
+
+
+
+---
+
+## Security & Reliability Enhancements
+
+This platform implements defense-in-depth, least-privilege identity federation, and automated resilience across all layers of the cloud environment:
+
+### 1. Zero-Trust Access & Identity Federation
+* **GitHub Actions OIDC Federation**: Eliminated static, long-lived AWS IAM access keys (`AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY`). Deployments authenticate via short-lived, cryptographically verified OpenID Connect tokens issued directly by GitHub to AWS STS.
+* **IAM Least Privilege & Role Segregation**: Separation of concerns between the **Task Execution Role** (fetching images from ECR, publishing CloudWatch logs) and the **Task Role** (runtime permissions). Log writing permissions are strictly scoped to the project log group (`/ecs/secure-saas`).
+
+### 2. Perimeter Defense & Network Segmentation
+* **Application Load Balancer Request Hardening**: Enforced `drop_invalid_header_fields = true` on the ALB to mitigate HTTP Desync, Request Smuggling, and header-based attack vectors.
+* **Security Group Micro-Segmentation**: ECS container tasks strictly disallow direct ingress from the public internet. Port 3000 is open only to requests originating from the ALB Security Group ID (`aws_security_group.alb.id`).
+
+### 3. Container Hardening & Shift-Left DevSecOps
+* **Non-Root Execution**: Container runs under a dedicated, unprivileged POSIX user (`USER appuser`), restricting container breakouts from gaining host-level root capabilities.
+* **Automated Security Gates in CI/CD**:
+  * **Checkov IaC Scanning**: Automated static analysis enforcing AWS security benchmarks across Terraform definitions prior to merge.
+  * **Trivy Container Scanning**: Image vulnerability auditing catching critical and high CVEs before deployment.
+  * **Automated Unit Testing**: Native Node.js test suite (`npm test`) executing in CI to validate endpoints (`/`, `/health`, 404 handler) before container builds.
+
+### 4. High Availability & Resilience
+* **Multi-AZ Fault Tolerance**: Active load balancing across multiple Availability Zones (`us-east-1a`, `us-east-1b`) ensuring uptime even during single-datacenter disruptions.
+* **Target-Tracking Autoscaling**: Dynamic horizontal scaling of ECS Fargate tasks based on CloudWatch average CPU utilization (> 80%), absorbing sudden traffic spikes.
+* **Active Health Checking**: ALB target group actively polls the `/health` endpoint every 30 seconds with automated draining and replacement of unhealthy tasks.
+
+### 5. Proactive Observability & Incident Response
+* **CloudWatch Alarms**: Real-time monitoring of key operational indicators:
+  * CPU Utilization > 80%
+  * HTTP 5XX error rate > 5 errors/min
+  * Target response latency > 2 seconds
+* **Amazon SNS Alert Routing**: Automatic dispatch of high-priority email alerts upon alarm state transitions and recovery confirmations.
+* **Centralized Operational Dashboard**: Visual oversight of cluster CPU, ALB request latencies, and HTTP status codes in a single pane of glass.
+
+### 6. Infrastructure State Integrity
+* **S3 Remote State with Encryption & Versioning**: `AES256` server-side encryption with public access blocked and object versioning enabled prevents state file loss or unauthorized tampering.
+* **Distributed State Locking with DynamoDB**: Automatic lock acquisition during `terraform plan` and `terraform apply` avoids race conditions and concurrent pipeline collisions.
 
 ---
 

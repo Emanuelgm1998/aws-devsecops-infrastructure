@@ -28,6 +28,7 @@ health: ## Verify the running application
 	@echo
 
 test: ## Run checks that do not require an AWS account
+	cd app && npm test
 	terraform fmt -check -recursive
 	docker build --tag aws-devsecops-infrastructure:test app/
 	docker run --rm aws-devsecops-infrastructure:test node --check index.js

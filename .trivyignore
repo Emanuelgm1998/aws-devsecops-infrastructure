@@ -1,3 +1,6 @@
+# Trivy Container Vulnerability Scan Exceptions
+# Baselined upstream npm/node-bundled CVEs without an available upstream patch at build time.
+# Review periodically for released fixes.
 CVE-2026-14257
 CVE-2026-69152
 CVE-2026-69192

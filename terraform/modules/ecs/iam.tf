@@ -21,7 +21,7 @@ resource "aws_iam_policy" "ecs_task_policy" {
           "logs:CreateLogStream",
           "logs:PutLogEvents"
         ]
-        Resource = "arn:aws:logs:*:*:*"
+        Resource = "arn:aws:logs:${var.aws_region}:*:log-group:/ecs/${var.project}:*"
       },
       {
         Effect = "Allow"
